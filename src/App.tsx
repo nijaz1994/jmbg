@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './App.css'
+import LoaderSpinner from './components/LoaderSpinner';
 
 type JmbgData = {
   sex?: string;
@@ -12,8 +13,10 @@ type JmbgData = {
 export default function App() {
   const [data, setData] = useState<JmbgData | null>(null);
   const [jmbg, setJmbg] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   function handleSubmitJmbg() {
+    setLoading(true);
     if (jmbg.length !== 13) {
       alert("Niste unijeli ispravan JMB. JMB ima 13 cifri.");
     } else {
@@ -98,14 +101,34 @@ export default function App() {
 
       setData(newData);
     }
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   }
 
   return (
     <div className="container flex flex-col gap-3">
-      <label htmlFor="jmb">Unesi svoj JMB (jedinstveni matični broj):</label>
-      <input onChange={(e) => setJmbg(e.target.value)} className='bg-white text-black h-14 px-4 rounded' type="number" name="jmb" id="jmb" minLength={13} maxLength={13} required autoFocus />
-      <button onClick={handleSubmitJmbg}>OK</button>
-      {data && (
+      <label className='text-gray-800' htmlFor="jmb">Unesi svoj JMB (jedinstveni matični broj):</label>
+      <input
+        onChange={(e) => setJmbg(e.target.value)}
+        className='bg-white text-gray-900 h-14 px-4 rounded-full shadow-lg'
+        type="number"
+        name="jmb"
+        id="jmb"
+        minLength={13}
+        autoFocus
+        maxLength={13}
+        required
+      />
+      <button
+        className='bg-blue-700 text-white font-bold'
+        onClick={handleSubmitJmbg}>OK</button>
+      {loading && (
+        <div className="flex justify-center">
+          <LoaderSpinner />
+        </div>
+      )}
+      {!loading && data && (
         <p className='flex flex-col gap-2'>
           <div>Spol: {data.sex}.</div>
           <div>Datum rođenja: {data.day}.{data.month}.{data.year}.</div>
